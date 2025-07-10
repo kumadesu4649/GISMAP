@@ -279,7 +279,7 @@
     <div id="map"></div>
     
     <div class="timeline-panel">
-        <div class="current-year" id="currentYear">1914</div>
+        <div class="current-year" id="currentDate">2020年1月1日</div>
         <div class="timeline-labels">
             <span id="minYear">1914</span>
             <span id="maxYear">2022</span>
@@ -336,8 +336,8 @@
         
         function initializeTimeline() {
             slider.max = events.length - 1;
-            document.getElementById('minYear').textContent = events[0].year;
-            document.getElementById('maxYear').textContent = events[events.length - 1].year;
+            document.getElementById('minYear').textContent = events[0].info.when;
+            document.getElementById('maxYear').textContent = events[events.length - 1].info.when;
             showEvent(0);
         }
 
@@ -351,7 +351,7 @@
 
         // 要素取得
         const slider = document.getElementById('timelineSlider');
-        const currentYear = document.getElementById('currentYear');
+        const currentDate = document.getElementById('currentDate');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const playBtn = document.getElementById('playBtn');
@@ -391,7 +391,7 @@
             map.setView(event.latlng, 4, { animate: true, duration: 1 });
 
             // 年表示更新
-            currentYear.textContent = event.year;
+            currentDate.textContent = event.info.when;
 
             // ボタン状態更新
             prevBtn.disabled = idx === 0;
