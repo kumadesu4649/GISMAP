@@ -372,14 +372,39 @@
             // マーカー表示
             if (marker) map.removeLayer(marker);
             
-            // カスタムマーカーアイコン
-            const customIcon = L.divIcon({
-                html: '<div style="background: linear-gradient(135deg, #3b82f6, #06b6d4); width: 20px; height: 20px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 4px 16px rgba(59, 130, 246, 0.6);"></div>',
-                iconSize: [26, 26],
-                iconAnchor: [13, 13],
-                className: 'custom-marker'
+            // 条件によってピン画像を切り替え
+            let pinImage = "pin01.png"; // デフォルト
+
+
+            switch (event.title) {
+              case "IAEA非難決議":
+                pinImage = "pin01.png";
+                break;
+              case "ライジング・ライオン作戦":
+                pinImage = "pin02.png";
+                break;
+              case "オマーン核協議の決裂":
+                pinImage = "pin03.png";
+                break;
+              case "米国の核施設攻撃":
+                pinImage = "pin01.png";
+                break;
+              case "イランの報復と封鎖示唆":
+                pinImage = "pin05.png";
+                break;
+              default:
+                pinImage = "pin01.png";
+            }
+
+
+            // カスタムアイコンを画像で作成
+            const customIcon = L.icon({
+              iconUrl: `画像/${pinImage}`,
+              iconSize: [180, 100],
+              iconAnchor: [40, 80], 
+              className: 'custom-marker'
             });
-            
+
             marker = L.marker(event.latlng, { icon: customIcon }).addTo(map);
             
             // マーカークリックイベント
