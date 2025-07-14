@@ -359,6 +359,8 @@
         const closePopup = document.getElementById('closePopup');
 
         let marker = null;
+        let deathCircle = null;
+        let refugeeCircle = null;
         let isPlaying = false;
         let playInterval = null;
         
@@ -368,9 +370,17 @@
         // イベント表示
         function showEvent(idx) {
             const event = events[idx];
-            
-            // マーカー表示
+
             if (marker) map.removeLayer(marker);
+            if (deathCircle) map.removeLayer(deathCircle);
+            if (refugeeCircle) map.removeLayer(refugeeCircle);
+
+            // ここで座標ズレ用変数を用意する
+            const info = event.info;
+            const pinLatlng = event.latlng;
+            const deathLatlng = [event.latlng[0] + 4.0, event.latlng[1]];     // 赤円を上にズラす
+        const refugeeLatlng = [event.latlng[0] - 3.0, event.latlng[1]];   // 青円を下にズラす
+
             
             // 条件によってピン画像を切り替え
             let pinImage = "pin01.png"; // デフォルト
@@ -421,6 +431,44 @@
             // ボタン状態更新
             prevBtn.disabled = idx === 0;
             nextBtn.disabled = idx === events.length - 1;
+            
+            // マーカー・円を初期化（すでにピンがある前提）
+            if (marker) map.removeLayer(marker);
+            if (deathCircle) map.removeLayer(deathCircle);
+            if (refugeeCircle) map.removeLayer(refugeeCircle);
+
+            // ピン（カスタムデザインのまま）
+            marker = L.marker(event.latlng, { icon: customIcon }).addTo(map);
+            marker.on('click', function () {
+              updatePopupContent(event);
+              infoPopup.classList.add('show');
+            });
+
+            // 死者数（赤円）表示（円の大きさは人数に比例）
+            if (info.deaths && info.deaths > 0) {
+              deathCircle = L.circle(deathLatlng, {
+                radius: info.deaths * 5000,
+                color: "red",
+                fillColor: "rgba(255, 0, 0, 0.3)",
+                fillOpacity: 0.4,
+                weight: 1
+              }).addTo(map);
+
+              deathCircle.bindPopup(`死者数: ${info.deaths}人`);
+            }
+
+            // 避難者数（青円）表示
+            if (info.refugees && info.refugees > 0) {
+              refugeeCircle = L.circle(refugeeLatlng, {
+                radius: info.refugees * 500,
+                color: "blue",
+                fillColor: "rgba(0, 123, 255, 0.3)",
+                fillOpacity: 0.4,
+                weight: 1
+              }).addTo(map);
+
+              refugeeCircle.bindPopup(`避難者数: ${info.refugees}人`);
+            }
         }
 
         // ポップアップ内容更新
